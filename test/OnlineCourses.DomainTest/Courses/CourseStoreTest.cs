@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using Bogus;
+using Moq;
 using OnlineCourses.Domain.Courses;
 using Xunit;
 
@@ -6,25 +7,37 @@ namespace OnlineCourses.DomainTest.Courses
 {
     public class CourseStoreTest
     {
+        private readonly CourseDto _courseDto;
+        private readonly Mock<ICourseRepository> _courseRepositoryMock;
+        private readonly CourseStore _courseStore;
+
+        public CourseStoreTest()
+        {
+            var fake = new Faker();
+            _courseDto = new CourseDto
+            {
+                Name = fake.Random.Words(),
+                Description = fake.Lorem.Paragraph(),
+                Workload = fake.Random.Double(50, 1000),
+                TargetAudience = 1,
+                Price = fake.Random.Double(1000, 2000)
+            };
+
+            _courseRepositoryMock = new Mock<ICourseRepository>();
+            _courseStore = new CourseStore(_courseRepositoryMock.Object);
+        }
+
         [Fact]
         public void Should_Add_Course()
         {
-            var courseDto = new CourseDto
-            {
-                Name = "Course A",
-                Description = "Description",
-                Workload = 80,
-                TargetAudience = 1,
-                Price = 8
-            };
+            _courseStore.Store(_courseDto);
 
-            var courseRepositoryMock = new Mock<ICourseRepository>();
-            
-            var courseStore = new CourseStore(courseRepositoryMock.Object);
-
-            courseStore.Store(courseDto);
-
-            courseRepositoryMock.Verify(r => r.Add(It.IsAny<Course>()));
+            _courseRepositoryMock.Verify(r => r.Add(
+                It.Is<Course>(
+                    c => c.Name == _courseDto.Name &&
+                    c.Description == _courseDto.Description
+                )
+            ));
         }
     }
 
