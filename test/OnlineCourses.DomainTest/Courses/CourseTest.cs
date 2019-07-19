@@ -1,5 +1,6 @@
 ﻿using Bogus;
 using ExpectedObjects;
+using OnlineCourses.Domain.Courses;
 using OnlineCourses.DomainTest._Builders;
 using OnlineCourses.DomainTest._Util;
 using System;
@@ -89,40 +90,5 @@ namespace OnlineCourses.DomainTest.Courses
                 CourseBuilder.New().WithPrice(invalidPrice).Build())
                 .WithMessage("Invalid price");
         }
-    }
-
-    public enum TargetAudience
-    {
-        Student,
-        CollegeStudent,
-        Employee,
-        Employer
-    }
-
-    public class Course
-    {
-        public Course(string name, string description, double workload, TargetAudience targetAudience, double price)
-        {
-            if (string.IsNullOrEmpty(name))
-                throw new ArgumentException("Invalid name");
-
-            if (workload < 1)
-                throw new ArgumentException("Invalid workload");
-
-            if (price < 1)
-                throw new ArgumentException("Invalid price");
-
-            Name = name;
-            Description = description;
-            Workload = workload;
-            TargetAudience = targetAudience;
-            Price = price;
-        }
-
-        public string Name { get; private set; }
-        public string Description { get; set; }
-        public double Workload { get; private set; }
-        public TargetAudience TargetAudience { get; private set; }
-        public double Price { get; private set; }
     }
 }
