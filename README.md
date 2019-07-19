@@ -7,4 +7,4 @@
 ## Extensions added in project
 
 - ExpectedObjects (version 2.3.4)
-
+- Bogus (version 22.0.2)

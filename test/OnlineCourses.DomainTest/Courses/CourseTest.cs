@@ -1,4 +1,5 @@
-﻿using ExpectedObjects;
+﻿using Bogus;
+using ExpectedObjects;
 using OnlineCourses.DomainTest._Builders;
 using OnlineCourses.DomainTest._Util;
 using System;
@@ -21,12 +22,13 @@ namespace OnlineCourses.DomainTest.Courses
         {
             _output = output;
             _output.WriteLine("Constructor being executed");
+            var faker = new Faker();
 
-            _name = "Basic Computing";
-            _workload = 80;
+            _name = faker.Random.Word();
+            _workload = faker.Random.Double(50, 1000);
             _targetAudience = TargetAudience.Student;
-            _price = 950;
-            _description = "A description";
+            _price = faker.Random.Double(100, 1000);
+            _description = faker.Lorem.Paragraph();
         }
 
         // Dispose is always executed after each test method being executed (CleanUp);
@@ -40,7 +42,7 @@ namespace OnlineCourses.DomainTest.Courses
         {
             var expectedCourse = new
             {
-                Name = "Basic Computing",
+                Name = _name,
                 Workload = _workload,
                 TargetAudience = _targetAudience,
                 Price = _price,
