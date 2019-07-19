@@ -1,6 +1,8 @@
 ﻿using Bogus;
 using Moq;
 using OnlineCourses.Domain.Courses;
+using OnlineCourses.DomainTest._Util;
+using System;
 using Xunit;
 
 namespace OnlineCourses.DomainTest.Courses
@@ -19,7 +21,7 @@ namespace OnlineCourses.DomainTest.Courses
                 Name = fake.Random.Words(),
                 Description = fake.Lorem.Paragraph(),
                 Workload = fake.Random.Double(50, 1000),
-                TargetAudience = 1,
+                TargetAudience = "Student",
                 Price = fake.Random.Double(1000, 2000)
             };
 
@@ -39,6 +41,16 @@ namespace OnlineCourses.DomainTest.Courses
                 )
             ));
         }
+
+        [Fact]
+        public void ShouldNot_Inform_AnInvalidTargetAudience()
+        {
+            var invalidTargetAudience = "Doctor";
+            _courseDto.TargetAudience = invalidTargetAudience;
+
+            Assert.Throws<ArgumentException>(() => _courseStore.Store(_courseDto))
+                .WithMessage("Invalid Target Audience");
+        }
     }
 
     public interface ICourseRepository
@@ -56,10 +68,15 @@ namespace OnlineCourses.DomainTest.Courses
 
         public void Store(CourseDto courseDto)
         {
+            Enum.TryParse(typeof(TargetAudience), courseDto.TargetAudience, out var targetAudience);
+
+            if (targetAudience == null)
+                throw new ArgumentException("Invalid Target Audience");
+
             var course = new Course(courseDto.Name,
                                     courseDto.Description,
                                     courseDto.Workload,
-                                    TargetAudience.Student,
+                                    (TargetAudience)targetAudience,
                                     courseDto.Price);
 
             _courseRepository.Add(course);
@@ -71,7 +88,7 @@ namespace OnlineCourses.DomainTest.Courses
         public string Name { get; set; }
         public string Description { get; set; }
         public double Workload { get; set; }
-        public int TargetAudience { get; set; }
+        public string TargetAudience { get; set; }
         public double Price { get; set; }
     }
 }
