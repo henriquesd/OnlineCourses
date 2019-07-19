@@ -1,4 +1,5 @@
 ﻿using ExpectedObjects;
+using OnlineCourses.DomainTest._Util;
 using System;
 using Xunit;
 
@@ -38,14 +39,12 @@ namespace OnlineCourses.DomainTest.Courses
                 Price = (double)950
             };
 
-            var message = Assert.Throws<ArgumentException>(() =>
+            Assert.Throws<ArgumentException>(() =>
                 new Course(invalidName,
                             expectedCourse.Workload,
                             expectedCourse.TargetAudience,
                             expectedCourse.Price))
-                .Message;
-
-            Assert.Equal("Invalid name", message);
+                .WithMessage("Invalid name");
         }
 
         [Theory]
@@ -62,14 +61,12 @@ namespace OnlineCourses.DomainTest.Courses
                 Price = (double)950
             };
 
-            var message = Assert.Throws<ArgumentException>(() =>
+            Assert.Throws<ArgumentException>(() =>
                 new Course(expectedCourse.Name,
                             invalidWorkload,
                             expectedCourse.TargetAudience,
                             expectedCourse.Price))
-                .Message;
-
-            Assert.Equal("Invalid workload", message);
+                .WithMessage("Invalid workload");
         }
 
         [Theory]
@@ -86,14 +83,12 @@ namespace OnlineCourses.DomainTest.Courses
                 Price = (double)950
             };
 
-            var message = Assert.Throws<ArgumentException>(() =>
+            Assert.Throws<ArgumentException>(() =>
                 new Course(expectedCourse.Name,
                             expectedCourse.Workload,
                             expectedCourse.TargetAudience,
                             invalidPrice))
-                .Message;
-
-            Assert.Equal("Invalid price", message);
+                .WithMessage("Invalid price");
         }
 
     }
