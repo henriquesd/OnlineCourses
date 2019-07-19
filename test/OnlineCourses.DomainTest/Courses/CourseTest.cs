@@ -1,4 +1,5 @@
-﻿using Xunit;
+﻿using ExpectedObjects;
+using Xunit;
 
 namespace OnlineCourses.DomainTest.Courses
 {
@@ -7,17 +8,20 @@ namespace OnlineCourses.DomainTest.Courses
         [Fact]
         public void ShouldCreateCourse()
         {
-            const string name = "Basic Computing";
-            const double workload = 80;
-            const string targetAudience = "Students";
-            const double price = 950;
+            var expectedCourse = new
+            {
+                Name = "Basic Computing",
+                Workload = (double)80,
+                TargetAudience = "Students",
+                Price = (double)950
+            };
 
-            var course = new Course(name, workload, targetAudience, price);
+            var course = new Course(expectedCourse.Name,
+                                    expectedCourse.Workload,
+                                    expectedCourse.TargetAudience,
+                                    expectedCourse.Price);
 
-            Assert.Equal(name, course.Name);
-            Assert.Equal(workload, course.Workload);
-            Assert.Equal(targetAudience, course.TargetAudience);
-            Assert.Equal(price, course.Price);
+            expectedCourse.ToExpectedObject().ShouldMatch(course);
         }
     }
 
