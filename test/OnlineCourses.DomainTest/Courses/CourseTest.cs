@@ -1,4 +1,5 @@
 ﻿using ExpectedObjects;
+using OnlineCourses.DomainTest._Builders;
 using OnlineCourses.DomainTest._Util;
 using System;
 using Xunit;
@@ -13,6 +14,7 @@ namespace OnlineCourses.DomainTest.Courses
         private readonly double _workload;
         private readonly TargetAudience _targetAudience;
         private readonly double _price;
+        private readonly string _description;
 
         // The constructor is always executed before each test method being executed (SetUp);
         public CourseTest(ITestOutputHelper output)
@@ -24,13 +26,13 @@ namespace OnlineCourses.DomainTest.Courses
             _workload = 80;
             _targetAudience = TargetAudience.Student;
             _price = 950;
+            _description = "A description";
         }
 
         // Dispose is always executed after each test method being executed (CleanUp);
         public void Dispose()
         {
             _output.WriteLine("Dispose being executed");
-
         }
 
         [Fact]
@@ -41,10 +43,12 @@ namespace OnlineCourses.DomainTest.Courses
                 Name = "Basic Computing",
                 Workload = _workload,
                 TargetAudience = _targetAudience,
-                Price = _price
+                Price = _price,
+                Description = _description
             };
 
             var course = new Course(expectedCourse.Name,
+                                    expectedCourse.Description,
                                     expectedCourse.Workload,
                                     expectedCourse.TargetAudience,
                                     expectedCourse.Price);
@@ -58,10 +62,7 @@ namespace OnlineCourses.DomainTest.Courses
         public void Course_ShouldNotHave_AnInvalidName(string invalidName)
         {
             Assert.Throws<ArgumentException>(() =>
-                new Course(invalidName,
-                            _workload,
-                            _targetAudience,
-                            _price))
+               CourseBuilder.New().WithName(invalidName).Build())
                 .WithMessage("Invalid name");
         }
 
@@ -72,10 +73,7 @@ namespace OnlineCourses.DomainTest.Courses
         public void Course_ShouldNotHave_WorkloadLowerThanOne(double invalidWorkload)
         {
             Assert.Throws<ArgumentException>(() =>
-                new Course(_name,
-                            invalidWorkload,
-                            _targetAudience,
-                            _price))
+                CourseBuilder.New().WithWorkload(invalidWorkload).Build())
                 .WithMessage("Invalid workload");
         }
 
@@ -85,19 +83,8 @@ namespace OnlineCourses.DomainTest.Courses
         [InlineData(-100)]
         public void Course_ShouldNotHave_PriceLowerThanOne(double invalidPrice)
         {
-            var expectedCourse = new
-            {
-                Name = "Basic Computing",
-                Workload = (double)80,
-                TargetAudience = TargetAudience.Student,
-                Price = (double)950
-            };
-
             Assert.Throws<ArgumentException>(() =>
-                new Course(_name,
-                            _workload,
-                            _targetAudience,
-                            invalidPrice))
+                CourseBuilder.New().WithPrice(invalidPrice).Build())
                 .WithMessage("Invalid price");
         }
     }
@@ -112,7 +99,7 @@ namespace OnlineCourses.DomainTest.Courses
 
     public class Course
     {
-        public Course(string name, double workload, TargetAudience targetAudience, double price)
+        public Course(string name, string description, double workload, TargetAudience targetAudience, double price)
         {
             if (string.IsNullOrEmpty(name))
                 throw new ArgumentException("Invalid name");
@@ -124,12 +111,14 @@ namespace OnlineCourses.DomainTest.Courses
                 throw new ArgumentException("Invalid price");
 
             Name = name;
+            Description = description;
             Workload = workload;
             TargetAudience = targetAudience;
             Price = price;
         }
 
         public string Name { get; private set; }
+        public string Description { get; set; }
         public double Workload { get; private set; }
         public TargetAudience TargetAudience { get; private set; }
         public double Price { get; private set; }
